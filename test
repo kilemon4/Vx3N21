@@ -15,7 +15,18 @@ function _G.Menu:New(title)
     Methadone.Name = "Methadone"
     Methadone.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     Methadone.Parent = game:GetService("CoreGui")
+    local UserInputService = game:GetService("UserInputService")
+    local toggleKey = Enum.KeyCode.K
 
+    UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
+        -- gameProcessedEvent ensures the GUI doesn't toggle if the user is typing in chat
+        if gameProcessedEvent then return end
+        
+        -- Check if the pressed key is 'K'
+        if input.KeyCode == toggleKey then
+            Methadone.Enabled = not Methadone.Enabled
+        end
+    end)
     local Bacrnd = Instance.new("Frame")
     Bacrnd.Name = "Bacrnd"
     Bacrnd.Size = UDim2.new(0.00, 346.00, 0.00, 332.00)
@@ -62,6 +73,8 @@ function _G.Menu:New(title)
             Bacrnd.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
         end
     end)
+
+
 
     local TextLabel = Instance.new("TextLabel")
     TextLabel.BackgroundTransparency = 1
@@ -332,3 +345,36 @@ function _G.Menu:New(title)
 end
 
 return _G.Menu
+-- ==========================================================
+-- IMPLEMENTING MULTIPLE TABS BELOW
+-- ==========================================================
+
+local Window = _G.Menu:New("Methadone Premium - Baseplate")
+
+-- Create Tab 1: Movement / Variables
+local Tab1 = Window:Tab("Movement")
+
+Tab1:Toggle("Fly Hack", false, function(state)
+    print("Fly Mod toggled to:", state)
+end)
+
+Tab1:Slider("FOV Changer", 70, 120, 90, function(value)
+    print("Adjusting Field of View to:", value)
+end)
+
+Tab1:TextBox("WalkSpeed Custom", function(text)
+    print("Forcing speed value to:", text)
+end)
+
+
+-- Create Tab 2: Vehicle Spawning
+local Tab2 = Window:Tab("Vehicles")
+
+Tab2:Button("Spawn Car", function()
+    print("Car object spawned successfully!")
+end)
+
+Tab2:Button("Spawn Boat", function()
+    print("Boat object spawned successfully!")
+end)
+
