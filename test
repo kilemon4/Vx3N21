@@ -345,36 +345,3 @@ function _G.Menu:New(title)
 end
 
 return _G.Menu
--- ==========================================================
--- IMPLEMENTING MULTIPLE TABS BELOW
--- ==========================================================
-
-local Window = _G.Menu:New("Methadone Premium - Baseplate")
-
--- Create Tab 1: Movement / Variables
-local Tab1 = Window:Tab("Movement")
-
-Tab1:Toggle("Fly Hack", false, function(state)
-    print("Fly Mod toggled to:", state)
-end)
-
-Tab1:Slider("FOV Changer", 70, 120, 90, function(value)
-    print("Adjusting Field of View to:", value)
-end)
-
-Tab1:TextBox("WalkSpeed Custom", function(text)
-    print("Forcing speed value to:", text)
-end)
-
-
--- Create Tab 2: Vehicle Spawning
-local Tab2 = Window:Tab("Vehicles")
-
-Tab2:Button("Spawn Car", function()
-    print("Car object spawned successfully!")
-end)
-
-Tab2:Button("Spawn Boat", function()
-    print("Boat object spawned successfully!")
-end)
-
