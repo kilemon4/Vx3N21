@@ -1,0 +1,347 @@
+local sound = Instance.new("Sound")
+sound.SoundId = "rbxassetid://139719503904449"
+sound.Volume = 1
+sound.Parent = game:GetService("SoundService")
+
+
+_G.Menu = {}
+
+function _G.Menu:New(title)
+    local UserInputService = game:GetService("UserInputService")
+    local Players = game:GetService("Players")
+    local LocalPlayer = Players.LocalPlayer
+    
+    local Methadone = Instance.new("ScreenGui")
+    Methadone.Name = "Methadone"
+    Methadone.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    Methadone.Parent = game:GetService("CoreGui")
+    local UserInputService = game:GetService("UserInputService")
+    local toggleKey = Enum.KeyCode.K
+
+    UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
+        -- gameProcessedEvent ensures the GUI doesn't toggle if the user is typing in chat
+        if gameProcessedEvent then return end
+        
+        -- Check if the pressed key is 'K'
+        if input.KeyCode == toggleKey then
+            Methadone.Enabled = not Methadone.Enabled
+        end
+    end)
+    local Bacrnd = Instance.new("Frame")
+    Bacrnd.Name = "Bacrnd"
+    Bacrnd.Size = UDim2.new(0.00, 346.00, 0.00, 332.00)
+    Bacrnd.Position = UDim2.new(0.35, 0.00, 0.28, 0.00)
+    Bacrnd.BorderSizePixel = 0
+    Bacrnd.BackgroundTransparency = 0.45
+    Bacrnd.BackgroundColor3 = Color3.new(0.16, 0.07, 0.19)
+    Bacrnd.Parent = Methadone
+
+    local Watermark = Instance.new("Frame")
+    Watermark.Name = "Watermark"
+    Watermark.Size = UDim2.new(0.00, 122.00, 0.00, 29.00)
+    Watermark.BorderColor3 = Color3.new(0.00, 0.00, 0.00)
+    Watermark.BorderSizePixel = 0
+    Watermark.BackgroundTransparency = 0.44999998807907104
+    Watermark.BackgroundColor3 = Color3.new(0.16, 0.07, 0.19)
+    Watermark.Parent = Methadone
+
+    local UICorner_Watermark = Instance.new("UICorner")
+    UICorner_Watermark.Parent = Watermark
+    local UICorner = Instance.new("UICorner")
+    UICorner.Parent = Bacrnd
+
+    -- Dragging functionality
+    local dragging, dragInput, dragStart, startPos
+    Bacrnd.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = Bacrnd.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then dragging = false end
+            end)
+        end
+    end)
+    Bacrnd.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            dragInput = input
+        end
+    end)
+    UserInputService.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            local delta = input.Position - dragStart
+            Bacrnd.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end)
+
+
+
+    local TextLabel = Instance.new("TextLabel")
+    TextLabel.BackgroundTransparency = 1
+    TextLabel.FontFace = Font.new("rbxasset://fonts/families/AccanthisADFStd.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+    TextLabel.TextSize = 28
+    TextLabel.Size = UDim2.new(0.6, 0, 0.08, 0)
+    TextLabel.Text = title or "Methadone"
+    TextLabel.TextColor3 = Color3.new(0.90, 0.59, 1.00)
+    TextLabel.Position = UDim2.new(0.05, 0.00, 0.02, 0.00)
+    TextLabel.TextXAlignment = Enum.TextXAlignment.Left
+    TextLabel.Parent = Bacrnd
+
+    local Close = Instance.new("TextButton")
+    Close.Name = "Close"
+    Close.BackgroundTransparency = 1
+    Close.TextScaled = true
+    Close.FontFace = Font.new("rbxasset://fonts/families/AccanthisADFStd.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+    Close.Size = UDim2.new(0.00, 20.00, 0.00, 20.00)
+    Close.TextColor3 = Color3.new(0.90, 0.59, 1.00)
+    Close.Text = "X"
+    Close.Position = UDim2.new(0.91, 0.00, 0.03, 0.00)
+    Close.Parent = Bacrnd
+    
+    Close.MouseButton1Click:Connect(function()
+        sound:Play()
+        Methadone:Destroy()
+    end)
+
+    -- Tab Holder Frame
+    local TabHolder = Instance.new("Frame")
+    TabHolder.Name = "TabHolder"
+    TabHolder.Size = UDim2.new(1, 0, 0.00, 29.00)
+    TabHolder.Position = UDim2.new(0.00, 0.00, 0.12, 0.00)
+    TabHolder.BorderSizePixel = 0
+    TabHolder.BackgroundTransparency = 0.45
+    TabHolder.BackgroundColor3 = Color3.new(0.16, 0.07, 0.19)
+    TabHolder.Parent = Bacrnd
+
+    -- Automatically organize top tab buttons horizontally
+    local TabHolderLayout = Instance.new("UIListLayout")
+    TabHolderLayout.FillDirection = Enum.FillDirection.Horizontal
+    TabHolderLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    TabHolderLayout.Padding = UDim.new(0, 4)
+    TabHolderLayout.Parent = TabHolder
+
+    local TabWindowHolder = Instance.new("Frame")
+    TabWindowHolder.Name = "TabWindowHolder"
+    TabWindowHolder.Size = UDim2.new(0.96, 0, 0.72, 0)
+    TabWindowHolder.Position = UDim2.new(0.02, 0.00, 0.24, 0.00)
+    TabWindowHolder.BackgroundTransparency = 1
+    TabWindowHolder.Parent = Bacrnd
+
+    local WindowHandler = {}
+    local tabList = {}
+    local firstTab = true
+
+    -- TAB CREATION FUNCTION
+    function WindowHandler:Tab(tabName)
+        -- The dynamic frame container unique to this specific tab
+        local TabPage = Instance.new("ScrollingFrame")
+        TabPage.Name = tabName .. "Page"
+        TabPage.Active = true
+        TabPage.BorderSizePixel = 0
+        TabPage.BackgroundColor3 = Color3.new(0, 0, 0)
+        TabPage.Size = UDim2.new(1, 0, 1, 0)
+        TabPage.ScrollBarImageColor3 = Color3.new(0, 0, 0)
+        TabPage.ScrollBarThickness = 4
+        TabPage.BackgroundTransparency = 0.85
+        TabPage.Visible = firstTab -- Only the very first tab created stays visible initially
+        TabPage.Parent = TabWindowHolder
+
+        Instance.new("UICorner", TabPage)
+
+        local UIGridLayout = Instance.new("UIGridLayout")
+        UIGridLayout.SortOrder = Enum.SortOrder.LayoutOrder
+        UIGridLayout.CellSize = UDim2.new(0.95, 0, 0, 35) 
+        UIGridLayout.CellPadding = UDim2.new(0, 0, 0, 6)
+        UIGridLayout.Parent = TabPage
+
+        UIGridLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+            TabPage.CanvasSize = UDim2.new(0, 0, 0, UIGridLayout.AbsoluteContentSize.Y + 10)
+        end)
+
+        -- The top button navigation trigger
+        local TabButton = Instance.new("TextButton")
+        TabButton.Name = tabName .. "Btn"
+        TabButton.Text = tabName
+        TabButton.Size = UDim2.new(0, 85, 1, 0) -- Fixed horizontal sizing for navigation buttons
+        TabButton.BackgroundColor3 = firstTab and Color3.new(0.25, 0.12, 0.3) or Color3.new(0.12, 0.05, 0.15)
+        TabButton.FontFace = Font.new("rbxasset://fonts/families/AccanthisADFStd.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+        TabButton.TextSize = 14
+        TabButton.TextColor3 = firstTab and Color3.new(0.9, 0.6, 1) or Color3.new(0.6, 0.6, 0.6)
+        TabButton.Parent = TabHolder
+        Instance.new("UICorner", TabButton)
+
+        table.insert(tabList, {Page = TabPage, Button = TabButton})
+        firstTab = false
+
+        -- Navigation Switching Click Logic
+        TabButton.MouseButton1Click:Connect(function()
+            sound:Play()
+            for _, tab in pairs(tabList) do
+                if tab.Button == TabButton then
+                    tab.Page.Visible = true
+                    tab.Button.BackgroundColor3 = Color3.new(0.25, 0.12, 0.3)
+                    tab.Button.TextColor3 = Color3.new(0.9, 0.6, 1)
+                else
+                    tab.Page.Visible = false
+                    tab.Button.BackgroundColor3 = Color3.new(0.12, 0.05, 0.15)
+                    tab.Button.TextColor3 = Color3.new(0.6, 0.6, 0.6)
+                end
+            end
+        end)
+
+        -- LIBRARY METHODS EXCLUSIVE TO THIS GENERATED TAB CONTROLLER
+        local Elements = {}
+
+        function Elements:Button(Name, Call)
+            local Button = Instance.new("TextButton")
+            Button.Text = "  " .. Name
+            Button.TextXAlignment = Enum.TextXAlignment.Left
+            Button.BorderSizePixel = 0
+            Button.BackgroundColor3 = Color3.new(0.16, 0.07, 0.19)
+            Button.FontFace = Font.new("rbxasset://fonts/families/AccanthisADFStd.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+            Button.TextSize = 18
+            Button.TextColor3 = Color3.new(1.00, 1.00, 1.00)
+            Button.Parent = TabPage
+            
+            Instance.new("UICorner", Button)
+            local Stroke = Instance.new("UIStroke", Button)
+            Stroke.Color = Color3.new(0.33, 0.00, 0.50)
+            Stroke.Transparency = 0.73
+
+            Button.MouseButton1Click:Connect(function()sound:Play() pcall(Call) end)
+        end
+
+        function Elements:Toggle(Name, Default, Call)
+            local Toggled = Default or false
+            local ToggleBtn = Instance.new("TextButton")
+            ToggleBtn.Text = "  " .. Name
+            ToggleBtn.TextXAlignment = Enum.TextXAlignment.Left
+            ToggleBtn.BackgroundColor3 = Color3.new(0.16, 0.07, 0.19)
+            ToggleBtn.FontFace = Font.new("rbxasset://fonts/families/AccanthisADFStd.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+            ToggleBtn.TextSize = 18
+            ToggleBtn.TextColor3 = Color3.new(1.00, 1.00, 1.00)
+            ToggleBtn.Parent = TabPage
+
+            Instance.new("UICorner", ToggleBtn)
+            local Stroke = Instance.new("UIStroke", ToggleBtn)
+            Stroke.Color = Color3.new(0.33, 0.00, 0.50)
+            Stroke.Transparency = 0.73
+
+            local BoxDisplay = Instance.new("Frame", ToggleBtn)
+            BoxDisplay.Size = UDim2.new(0, 20, 0, 20)
+            BoxDisplay.AnchorPoint = Vector2.new(1, 0.5)
+            BoxDisplay.Position = UDim2.new(0.95, 0, 0.5, 0)
+            BoxDisplay.BackgroundColor3 = Color3.new(0.08, 0.03, 0.1)
+            Instance.new("UICorner", BoxDisplay)
+
+            local InnerIndicator = Instance.new("Frame", BoxDisplay)
+            InnerIndicator.Size = UDim2.new(0.7, 0, 0.7, 0)
+            InnerIndicator.Position = UDim2.new(0.15, 0, 0.15, 0)
+            InnerIndicator.BackgroundColor3 = Color3.new(0.6, 0.2, 0.8)
+            InnerIndicator.Visible = Toggled
+            Instance.new("UICorner", InnerIndicator)
+
+            ToggleBtn.MouseButton1Click:Connect(function()
+                sound:Play()
+                Toggled = not Toggled
+                InnerIndicator.Visible = Toggled
+                pcall(Call, Toggled)
+            end)
+        end
+
+        function Elements:TextBox(Placeholder, Call)
+            local Box = Instance.new("TextBox")
+            Box.PlaceholderText = "  " .. Placeholder
+            Box.Text = ""
+            Box.ClearTextOnFocus = false
+            Box.TextXAlignment = Enum.TextXAlignment.Center
+            Box.BackgroundColor3 = Color3.new(0.16, 0.07, 0.19)
+            Box.FontFace = Font.new("rbxasset://fonts/families/AccanthisADFStd.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+            Box.TextSize = 16
+            Box.TextColor3 = Color3.new(1, 1, 1)
+            Box.PlaceholderColor3 = Color3.new(0.5, 0.4, 0.6)
+            Box.Parent = TabPage
+
+            Instance.new("UICorner", Box)
+            local Stroke = Instance.new("UIStroke", Box)
+            Stroke.Color = Color3.new(0.33, 0.00, 0.50)
+            Stroke.Transparency = 0.73
+
+            Box.FocusLost:Connect(function(enterPressed)sound:Play() pcall(Call, Box.Text, enterPressed) end)
+        end
+
+        function Elements:Slider(Name, Min, Max, Default, Call)
+            local SliderFrame = Instance.new("Frame")
+            SliderFrame.BackgroundColor3 = Color3.new(0.16, 0.07, 0.19)
+            SliderFrame.Parent = TabPage
+
+            Instance.new("UICorner", SliderFrame)
+            local Stroke = Instance.new("UIStroke", SliderFrame)
+            Stroke.Color = Color3.new(0.33, 0.00, 0.50)
+            Stroke.Transparency = 0.73
+
+            local Label = Instance.new("TextLabel", SliderFrame)
+            Label.BackgroundTransparency = 1
+            Label.Size = UDim2.new(0.4, 0, 1, 0)
+            Label.Position = UDim2.new(0.03, 0, 0, 0)
+            Label.Text = Name
+            Label.TextColor3 = Color3.new(1, 1, 1)
+            Label.TextSize = 16
+            Label.FontFace = Font.new("rbxasset://fonts/families/AccanthisADFStd.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+            Label.TextXAlignment = Enum.TextXAlignment.Left
+
+            local Track = Instance.new("TextButton", SliderFrame)
+            Track.Text = ""
+            Track.Size = UDim2.new(0.4, 0, 0.25, 0)
+            Track.Position = UDim2.new(0.42, 0, 0.38, 0)
+            Track.BackgroundColor3 = Color3.new(0.08, 0.03, 0.1)
+            Instance.new("UICorner", Track)
+
+            local Bar = Instance.new("Frame", Track)
+            Bar.Size = UDim2.new((Default - Min) / (Max - Min), 0, 1, 0)
+            Bar.BackgroundColor3 = Color3.new(0.6, 0.2, 0.8)
+            Instance.new("UICorner", Bar)
+
+            local ValueLabel = Instance.new("TextLabel", SliderFrame)
+            ValueLabel.BackgroundTransparency = 1
+            ValueLabel.Size = UDim2.new(0.15, 0, 1, 0)
+            ValueLabel.Position = UDim2.new(0.83, 0, 0, 0)
+            ValueLabel.Text = tostring(Default)
+            ValueLabel.TextColor3 = Color3.new(1, 1, 1)
+            ValueLabel.TextSize = 14
+            ValueLabel.FontFace = Font.new("rbxasset://fonts/families/AccanthisADFStd.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+
+            local function UpdateSlider(input)
+                local percentage = math.clamp((input.Position.X - Track.AbsolutePosition.X) / Track.AbsoluteSize.X, 0, 1)
+                Bar.Size = UDim2.new(percentage, 0, 1, 0)
+                local value = math.floor(Min + (Max - Min) * percentage)
+                ValueLabel.Text = tostring(value)
+                pcall(Call, value)
+            end
+
+            local sliding = false
+            Track.InputBegan:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                    sliding = true
+                    UpdateSlider(input)
+                end
+            end)
+            UserInputService.InputChanged:Connect(function(input)
+                if sliding and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+                    UpdateSlider(input)
+                end
+            end)
+            UserInputService.InputEnded:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                    sliding = false
+                end
+            end)
+        end
+
+        return Elements
+    end
+
+    return WindowHandler
+end
+
+return _G.Menu
